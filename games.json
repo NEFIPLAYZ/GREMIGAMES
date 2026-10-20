@@ -1,1 +1,44 @@
-
+[
+  {
+    "name": "Frontlines",
+    "image": "https://placehold.co/300x300/171717/ffffff?text=Frontlines",
+    "link": "https://www.roblox.com/games/",
+    "category": "Shooting"
+  },
+  {
+    "name": "Arsenal",
+    "image": "https://placehold.co/300x300/171717/ffffff?text=Arsenal",
+    "link": "https://www.roblox.com/games/",
+    "category": "Shooting"
+  },
+  {
+    "name": "Phantom Forces",
+    "image": "https://placehold.co/300x300/171717/ffffff?text=Phantom+Forces",
+    "link": "https://www.roblox.com/games/",
+    "category": "Shooting"
+  },
+  {
+    "name": "Action Game",
+    "image": "https://placehold.co/300x300/171717/ffffff?text=Action+Game",
+    "link": "https://example.com/",
+    "category": "Action"
+  },
+  {
+    "name": "Racing Game",
+    "image": "https://placehold.co/300x300/171717/ffffff?text=Racing+Game",
+    "link": "https://example.com/",
+    "category": "Racing"
+  },
+  {
+    "name": "Arcade Game",
+    "image": "https://placehold.co/300x300/171717/ffffff?text=Arcade+Game",
+    "link": "https://example.com/",
+    "category": "Arcade"
+  },
+  {
+    "name": "GREMIGAMES Original",
+    "image": "https://placehold.co/300x300/171717/ffffff?text=GREMIGAMES",
+    "link": "https://example.com/",
+    "category": "GREMIGAMES Originals"
+  }
+]
