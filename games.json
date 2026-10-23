@@ -1,44 +1,74 @@
 [
   {
-    "name": "Frontlines",
-    "image": "https://placehold.co/300x300/171717/ffffff?text=Frontlines",
-    "link": "https://www.roblox.com/games/",
-    "category": "Shooting"
-  },
-  {
-    "name": "Arsenal",
-    "image": "https://placehold.co/300x300/171717/ffffff?text=Arsenal",
-    "link": "https://www.roblox.com/games/",
-    "category": "Shooting"
-  },
-  {
-    "name": "Phantom Forces",
-    "image": "https://placehold.co/300x300/171717/ffffff?text=Phantom+Forces",
-    "link": "https://www.roblox.com/games/",
-    "category": "Shooting"
-  },
-  {
-    "name": "Action Game",
-    "image": "https://placehold.co/300x300/171717/ffffff?text=Action+Game",
-    "link": "https://example.com/",
-    "category": "Action"
-  },
-  {
-    "name": "Racing Game",
-    "image": "https://placehold.co/300x300/171717/ffffff?text=Racing+Game",
-    "link": "https://example.com/",
+    "name": "Tesla Roadster Dash",
+    "image": "https://roadsterdash.com/social-card.jpg",
+    "link": "https://roadsterdash.com/",
     "category": "Racing"
   },
   {
-    "name": "Arcade Game",
-    "image": "https://placehold.co/300x300/171717/ffffff?text=Arcade+Game",
-    "link": "https://example.com/",
+    "name": "Race It: Car Racing",
+    "image": "https://placehold.co/300x300/171717/ffffff?text=Race+It",
+    "link": "https://html5.gamedistribution.com/7156533d158642919ee04df203b39205/",
+    "category": "Racing"
+  },
+  {
+    "name": "Car Racing",
+    "image": "https://placehold.co/300x300/171717/ffffff?text=Car+Racing",
+    "link": "https://html5.gamedistribution.com/a06bdce3ae774fae97c39df0777b726d/",
+    "category": "Racing"
+  },
+  {
+    "name": "Fortress Smash",
+    "image": "https://placehold.co/300x300/171717/ffffff?text=Fortress+Smash",
+    "link": "https://360playzone.com/game/fortress-smash",
+    "category": "Shooting"
+  },
+  {
+    "name": "Spear Stickman",
+    "image": "https://placehold.co/300x300/171717/ffffff?text=Spear+Stickman",
+    "link": "https://360playzone.com/game/spear-stickman",
+    "category": "Shooting"
+  },
+  {
+    "name": "Star Blaster",
+    "image": "https://placehold.co/300x300/171717/ffffff?text=Star+Blaster",
+    "link": "https://360playzone.com/game/star-blaster",
+    "category": "Shooting"
+  },
+  {
+    "name": "Survivor Arena",
+    "image": "https://placehold.co/300x300/171717/ffffff?text=Survivor+Arena",
+    "link": "https://360playzone.com/game/survivor-arena",
+    "category": "Action"
+  },
+  {
+    "name": "Blast Arena",
+    "image": "https://placehold.co/300x300/171717/ffffff?text=Blast+Arena",
+    "link": "https://360playzone.com/game/blast-arena",
+    "category": "Action"
+  },
+  {
+    "name": "Fruit Slash Master",
+    "image": "https://placehold.co/300x300/171717/ffffff?text=Fruit+Slash",
+    "link": "https://360playzone.com/game/fruit-slash",
+    "category": "Action"
+  },
+  {
+    "name": "Classic Snake",
+    "image": "https://placehold.co/300x300/171717/ffffff?text=Snake",
+    "link": "https://gamezipper.com/snake/",
     "category": "Arcade"
   },
   {
-    "name": "GREMIGAMES Original",
-    "image": "https://placehold.co/300x300/171717/ffffff?text=GREMIGAMES",
-    "link": "https://example.com/",
-    "category": "GREMIGAMES Originals"
+    "name": "Tetris",
+    "image": "https://placehold.co/300x300/171717/ffffff?text=Tetris",
+    "link": "https://gamezipper.com/tetris/",
+    "category": "Arcade"
+  },
+  {
+    "name": "2048",
+    "image": "https://placehold.co/300x300/171717/ffffff?text=2048",
+    "link": "https://gamezipper.com/2048/",
+    "category": "Arcade"
   }
 ]
