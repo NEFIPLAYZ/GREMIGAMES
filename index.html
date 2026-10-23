@@ -7,28 +7,32 @@
   <!-- Google Search Console Verification -->
   <meta name="google-site-verification" content="LPYvnjA0lW83tgggnn_tD-k-fN0q0d51TXIMNje5tJ0">
 
-  <!-- Website Title and Description -->
-  <title>GREMIGAMES</title>
+  <!-- Website Title and SEO -->
+  <title>GREMIGAMES - Play Free Online Games</title>
   <meta name="description" content="Play shooting, action, racing and arcade games on GREMIGAMES. Discover exciting games online for free.">
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#101116">
 
+  <!-- Website Icon / Favicon -->
+  <link rel="icon" type="image/png" sizes="512x512" href="./icon.png">
+  <link rel="shortcut icon" href="./icon.png" type="image/png">
+  <link rel="apple-touch-icon" href="./icon.png">
+
   <!-- Open Graph: WhatsApp, Facebook and Discord -->
   <meta property="og:site_name" content="GREMIGAMES">
-  <meta property="og:title" content="GREMI GAMES">
+  <meta property="og:title" content="GREMIGAMES - Play Free Online Games">
   <meta property="og:description" content="Play shooting, action, racing and arcade games on GREMIGAMES.">
   <meta property="og:url" content="https://nefiplayz.github.io/gremigames/">
   <meta property="og:image" content="https://nefiplayz.github.io/gremigames/icon.png">
+  <meta property="og:image:width" content="512">
+  <meta property="og:image:height" content="512">
   <meta property="og:type" content="website">
 
   <!-- Twitter / X -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="GREMI GAMES">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="GREMIGAMES - Play Free Online Games">
   <meta name="twitter:description" content="Play shooting, action, racing and arcade games on GREMIGAMES.">
   <meta name="twitter:image" content="https://nefiplayz.github.io/gremigames/icon.png">
-
-  <!-- Website Icon -->
-  <link rel="icon" href="icon.png" type="image/png">
 
   <style>
     * {
@@ -256,12 +260,18 @@
     }
 
     @media (max-width: 480px) {
+      .header-container {
+        flex-wrap: wrap;
+      }
+
       .logo {
         font-size: 20px;
       }
 
       .search-box {
-        max-width: 180px;
+        max-width: none;
+        flex: 1;
+        min-width: 120px;
         padding: 8px 10px;
         font-size: 13px;
       }
@@ -302,7 +312,6 @@
 
   <header>
     <div class="header-container">
-
       <div class="logo">GREMI<span>GAMES</span></div>
 
       <input
@@ -312,13 +321,13 @@
         placeholder="Search Game"
         aria-label="Search Game"
       >
-
     </div>
   </header>
 
   <main class="container">
 
     <nav class="categories" aria-label="Game categories">
+
       <button class="category-btn active" data-category="All Games" type="button">
         All Games
       </button>
@@ -342,6 +351,7 @@
       <button class="category-btn" data-category="GREMIGAMES Originals" type="button">
         GREMIGAMES Originals
       </button>
+
     </nav>
 
     <h2 class="section-title">All Games</h2>
@@ -605,4 +615,4 @@
   </script>
 
 </body>
-      </html>
+</html>
