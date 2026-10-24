@@ -183,56 +183,18 @@
       font-size: 12px;
     }
 
-    /* Game Player */
+    /* Game Player - full screen, no header, no title, no help text */
     .game-player {
       display: none;
       position: fixed;
       inset: 0;
       z-index: 9999;
-      background: #101116;
+      background: #000;
       flex-direction: column;
     }
 
     .game-player.open {
       display: flex;
-    }
-
-    .player-header {
-      min-height: 58px;
-      padding: 10px 14px;
-      background: #181920;
-      border-bottom: 1px solid #30313d;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .player-title {
-      min-width: 0;
-      font-size: 16px;
-      font-weight: bold;
-      overflow-wrap: anywhere;
-    }
-
-    .player-actions {
-      display: flex;
-      gap: 8px;
-      flex-shrink: 0;
-    }
-
-    .player-btn {
-      border: 0;
-      border-radius: 7px;
-      padding: 10px 12px;
-      background: #ff4545;
-      color: #fff;
-      font-size: 13px;
-      cursor: pointer;
-    }
-
-    .player-btn.secondary {
-      background: #30313d;
     }
 
     .player-frame-wrap {
@@ -250,13 +212,25 @@
       background: #000;
     }
 
-    .player-help {
-      padding: 8px 12px;
-      background: #181920;
-      color: #bfc0cb;
-      text-align: center;
-      font-size: 12px;
-      line-height: 1.5;
+    /* Small floating close button so the game can still be exited */
+    .player-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 10;
+      width: 40px;
+      height: 40px;
+      border: 0;
+      border-radius: 50%;
+      background: rgba(255, 69, 69, 0.85);
+      color: #ffffff;
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .player-close:active {
+      background: #ff4545;
     }
 
     @media (max-width: 480px) {
@@ -274,19 +248,6 @@
         min-width: 120px;
         padding: 8px 10px;
         font-size: 13px;
-      }
-
-      .player-header {
-        padding: 9px;
-      }
-
-      .player-title {
-        font-size: 14px;
-      }
-
-      .player-btn {
-        padding: 10px;
-        font-size: 12px;
       }
     }
 
@@ -366,7 +327,7 @@
     &copy; <span id="year"></span> GREMIGAMES. All rights reserved.
   </footer>
 
-  <!-- Game Player -->
+  <!-- Game Player: no title bar, no "Open Link" button, no help text -->
   <section
     id="gamePlayer"
     class="game-player"
@@ -374,31 +335,6 @@
     aria-modal="true"
     aria-label="Game player"
   >
-
-    <div class="player-header">
-
-      <div id="playerTitle" class="player-title">Game</div>
-
-      <div class="player-actions">
-
-        <button
-          id="openExternalBtn"
-          class="player-btn secondary"
-          type="button"
-        >
-          Open Link
-        </button>
-
-        <button
-          id="closeGameBtn"
-          class="player-btn"
-          type="button"
-        >
-          Close
-        </button>
-
-      </div>
-    </div>
 
     <div class="player-frame-wrap">
 
@@ -414,10 +350,14 @@
 
     </div>
 
-    <div class="player-help">
-      Agar game load na ho, to ho sakta hai game ki website
-      embedding block karti ho. Open Link par click karein.
-    </div>
+    <button
+      id="closeGameBtn"
+      class="player-close"
+      type="button"
+      aria-label="Close game"
+    >
+      &#10005;
+    </button>
 
   </section>
 
@@ -429,9 +369,7 @@
 
     const gamePlayer = document.getElementById("gamePlayer");
     const gameFrame = document.getElementById("gameFrame");
-    const playerTitle = document.getElementById("playerTitle");
     const closeGameBtn = document.getElementById("closeGameBtn");
-    const openExternalBtn = document.getElementById("openExternalBtn");
 
     let games = [];
     let activeCategory = "All Games";
@@ -477,6 +415,26 @@
       }
     }
 
+    function enterFullscreen() {
+      const el = gamePlayer;
+
+      if (el.requestFullscreen) {
+        el.requestFullscreen().catch(() => {});
+      } else if (el.webkitRequestFullscreen) {
+        el.webkitRequestFullscreen();
+      } else if (el.msRequestFullscreen) {
+        el.msRequestFullscreen();
+      }
+    }
+
+    function exitFullscreen() {
+      if (document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {});
+      } else if (document.webkitFullscreenElement) {
+        document.webkitExitFullscreen();
+      }
+    }
+
     function openGame(game) {
       let url;
 
@@ -494,13 +452,15 @@
       }
 
       currentGameLink = url.href;
-      playerTitle.textContent = game.name;
       gameFrame.title = game.name;
 
       gamePlayer.classList.add("open");
       document.body.classList.add("player-open");
 
       gameFrame.src = currentGameLink;
+
+      enterFullscreen();
+
       closeGameBtn.focus();
     }
 
@@ -510,19 +470,11 @@
 
       gameFrame.src = "about:blank";
       currentGameLink = "";
+
+      exitFullscreen();
     }
 
     closeGameBtn.addEventListener("click", closeGame);
-
-    openExternalBtn.addEventListener("click", () => {
-      if (currentGameLink) {
-        window.open(
-          currentGameLink,
-          "_blank",
-          "noopener,noreferrer"
-        );
-      }
-    });
 
     document.addEventListener("keydown", event => {
       if (
@@ -615,4 +567,5 @@
   </script>
 
 </body>
-</html>
+  </html>
+  
