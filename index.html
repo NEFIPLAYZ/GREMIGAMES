@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 
   <!-- Google Search Console Verification -->
   <meta name="google-site-verification" content="LPYvnjA0lW83tgggnn_tD-k-fN0q0d51TXIMNje5tJ0">
@@ -39,11 +39,17 @@
       box-sizing: border-box;
     }
 
+    html,
+    body {
+      height: 100%;
+    }
+
     body {
       margin: 0;
       background: #101116;
       color: #ffffff;
       font-family: Arial, sans-serif;
+      overscroll-behavior: none;
     }
 
     body.player-open {
@@ -187,10 +193,17 @@
     .game-player {
       display: none;
       position: fixed;
-      inset: 0;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
       z-index: 9999;
       background: #000;
       flex-direction: column;
+      overflow: hidden;
     }
 
     .game-player.open {
@@ -215,8 +228,8 @@
     /* Small floating close button so the game can still be exited */
     .player-close {
       position: absolute;
-      top: 10px;
-      right: 10px;
+      top: calc(10px + env(safe-area-inset-top, 0px));
+      right: calc(10px + env(safe-area-inset-right, 0px));
       z-index: 10;
       width: 40px;
       height: 40px;
@@ -415,23 +428,49 @@
       }
     }
 
-    function enterFullscreen() {
-      const el = gamePlayer;
+    function requestFullscreenOn(el) {
+      const fn =
+        el.requestFullscreen ||
+        el.webkitRequestFullscreen ||
+        el.mozRequestFullScreen ||
+        el.msRequestFullscreen;
 
-      if (el.requestFullscreen) {
-        el.requestFullscreen().catch(() => {});
-      } else if (el.webkitRequestFullscreen) {
-        el.webkitRequestFullscreen();
-      } else if (el.msRequestFullscreen) {
-        el.msRequestFullscreen();
+      if (!fn) {
+        return Promise.reject(new Error("Fullscreen not supported"));
+      }
+
+      try {
+        const result = fn.call(el, { navigationUI: "hide" });
+        return result && result.then ? result : Promise.resolve();
+      } catch (error) {
+        return Promise.reject(error);
       }
     }
 
+    function enterFullscreen() {
+      // First try the player element, then fall back to the whole page.
+      requestFullscreenOn(gamePlayer)
+        .catch(() => requestFullscreenOn(document.documentElement))
+        .catch(() => {});
+    }
+
     function exitFullscreen() {
-      if (document.fullscreenElement) {
-        document.exitFullscreen().catch(() => {});
-      } else if (document.webkitFullscreenElement) {
-        document.webkitExitFullscreen();
+      const fn =
+        document.exitFullscreen ||
+        document.webkitExitFullscreen ||
+        document.mozCancelFullScreen ||
+        document.msExitFullscreen;
+
+      if (fn && (document.fullscreenElement ||
+        document.webkitFullscreenElement)) {
+        try {
+          const result = fn.call(document);
+          if (result && result.catch) {
+            result.catch(() => {});
+          }
+        } catch (error) {
+          /* ignore */
+        }
       }
     }
 
@@ -464,6 +503,32 @@
       closeGameBtn.focus();
     }
 
+    // Some mobile browsers only allow fullscreen on a fresh tap.
+    // If we are not in fullscreen yet, a tap inside the player retries it.
+    gamePlayer.addEventListener("pointerdown", event => {
+      if (event.target.closest && event.target.closest(".player-close")) {
+        return;
+      }
+
+      if (
+        gamePlayer.classList.contains("open") &&
+        !document.fullscreenElement &&
+        !document.webkitFullscreenElement
+      ) {
+        enterFullscreen();
+      }
+    });
+
+    // Keep the page locked while the game is open.
+    function syncBodyLock() {
+      if (gamePlayer.classList.contains("open")) {
+        document.body.classList.add("player-open");
+      }
+    }
+
+    document.addEventListener("fullscreenchange", syncBodyLock);
+    document.addEventListener("webkitfullscreenchange", syncBodyLock);
+
     function closeGame() {
       gamePlayer.classList.remove("open");
       document.body.classList.remove("player-open");
@@ -479,11 +544,28 @@
     document.addEventListener("keydown", event => {
       if (
         event.key === "Escape" &&
-        gamePlayer.classList.contains("open")
+        gamePlayer.classList.contains("open") &&
+        !document.fullscreenElement &&
+        !document.webkitFullscreenElement
       ) {
         closeGame();
       }
     });
+
+    // If the user leaves fullscreen (swipe/back), close the game too
+    // so the address bar never sits on top of a running game.
+    function handleFullscreenExit() {
+      if (
+        gamePlayer.classList.contains("open") &&
+        !document.fullscreenElement &&
+        !document.webkitFullscreenElement
+      ) {
+        closeGame();
+      }
+    }
+
+    document.addEventListener("fullscreenchange", handleFullscreenExit);
+    document.addEventListener("webkitfullscreenchange", handleFullscreenExit);
 
     function renderGames() {
       const searchText = searchInput.value.trim().toLowerCase();
@@ -567,5 +649,5 @@
   </script>
 
 </body>
-  </html>
+    </html>
   
