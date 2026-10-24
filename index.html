@@ -13,6 +13,12 @@
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#101116">
 
+  <!-- Fullscreen when added to home screen (PWA) -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22GREMIGAMES%22%2C%22short_name%22%3A%22GREMIGAMES%22%2C%22display%22%3A%22fullscreen%22%2C%22orientation%22%3A%22any%22%2C%22background_color%22%3A%22%23101116%22%2C%22theme_color%22%3A%22%23101116%22%7D">
+
   <!-- Website Icon / Favicon -->
   <link rel="icon" type="image/png" sizes="1000x1000" href="./icon.png">
   <link rel="shortcut icon" href="./icon.png" type="image/png">
@@ -52,8 +58,11 @@
       overscroll-behavior: none;
     }
 
-    body.player-open {
+    body.player-open,
+    html.player-open {
       overflow: hidden;
+      overscroll-behavior: none;
+      touch-action: none;
     }
 
     header {
@@ -440,7 +449,9 @@
       }
 
       try {
-        const result = fn.call(el, { navigationUI: "hide" });
+        // Call WITHOUT arguments for maximum browser compatibility.
+        // Some WebKit/WebView builds throw when options are passed.
+        const result = fn.call(el);
         return result && result.then ? result : Promise.resolve();
       } catch (error) {
         return Promise.reject(error);
@@ -495,10 +506,13 @@
 
       gamePlayer.classList.add("open");
       document.body.classList.add("player-open");
+      document.documentElement.classList.add("player-open");
+
+      // Ask for fullscreen FIRST, while the tap is still "fresh"
+      // (some browsers reject the request if anything runs in between).
+      enterFullscreen();
 
       gameFrame.src = currentGameLink;
-
-      enterFullscreen();
 
       closeGameBtn.focus();
     }
@@ -532,6 +546,7 @@
     function closeGame() {
       gamePlayer.classList.remove("open");
       document.body.classList.remove("player-open");
+      document.documentElement.classList.remove("player-open");
 
       gameFrame.src = "about:blank";
       currentGameLink = "";
@@ -649,5 +664,5 @@
   </script>
 
 </body>
-    </html>
-  
+        </html>
+      
