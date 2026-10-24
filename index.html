@@ -587,9 +587,9 @@
 
     // If the user leaves fullscreen (Back / swipe-back), close the game so
     // the browser's URL bar never sits on top of a running game.
-    let fullscreenExitTimer = null;
     let fullscreenWasActive = false;
     let fullscreenWatch = null;
+    let fullscreenEnterAt = 0;
 
     function isFullscreenNow() {
       return !!(
@@ -598,18 +598,22 @@
     }
 
     function handleFullscreenChange() {
-      clearTimeout(fullscreenExitTimer);
-
       if (isFullscreenNow()) {
         fullscreenWasActive = true;
+        fullscreenEnterAt = Date.now();
         if (gamePlayer.classList.contains("open")) {
           document.body.classList.add("player-open");
         }
         return;
       }
 
-      // We just left fullscreen - wait a moment, then close if still out.
-      fullscreenExitTimer = setTimeout(checkLeftFullscreen, 150);
+      // Ignore the tiny blip some browsers fire while entering fullscreen.
+      if (Date.now() - fullscreenEnterAt < 250) {
+        return;
+      }
+
+      // Left fullscreen: close the game at once, no delay.
+      checkLeftFullscreen();
     }
 
     function checkLeftFullscreen() {
@@ -633,7 +637,7 @@
           return;
         }
         checkLeftFullscreen();
-      }, 250);
+      }, 100);
     }
 
     function stopFullscreenWatch() {
@@ -731,5 +735,5 @@
   </script>
 
 </body>
-  </html>
-  
+    </html>
+        
