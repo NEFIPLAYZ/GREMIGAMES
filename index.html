@@ -234,25 +234,37 @@
       background: #000;
     }
 
-    /* Small floating close button so the game can still be exited */
-    .player-close {
+    /* Floating Back button on the left, MineFun-style, so the game can be exited */
+    .player-back {
       position: absolute;
-      top: calc(10px + env(safe-area-inset-top, 0px));
-      right: calc(10px + env(safe-area-inset-right, 0px));
+      left: calc(12px + env(safe-area-inset-left, 0px));
+      top: 50%;
+      transform: translateY(-50%);
       z-index: 10;
-      width: 40px;
-      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 54px;
+      height: 54px;
+      padding: 0;
       border: 0;
-      border-radius: 50%;
-      background: rgba(255, 69, 69, 0.85);
-      color: #ffffff;
-      font-size: 20px;
-      line-height: 1;
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.94);
+      color: #1f6fb2;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
       cursor: pointer;
+      transition: transform 0.1s ease;
     }
 
-    .player-close:active {
-      background: #ff4545;
+    .player-back svg {
+      width: 28px;
+      height: 28px;
+      display: block;
+    }
+
+    .player-back:active {
+      background: #ffffff;
+      transform: translateY(-50%) scale(0.93);
     }
 
     @media (max-width: 480px) {
@@ -374,11 +386,21 @@
 
     <button
       id="closeGameBtn"
-      class="player-close"
+      class="player-back"
       type="button"
-      aria-label="Close game"
+      aria-label="Back to games"
     >
-      &#10005;
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
     </button>
 
   </section>
@@ -396,6 +418,7 @@
     let games = [];
     let activeCategory = "All Games";
     let currentGameLink = "";
+    let hashPushed = false;
 
     document.getElementById("year").textContent =
       new Date().getFullYear();
@@ -508,10 +531,13 @@
       document.body.classList.add("player-open");
       document.documentElement.classList.add("player-open");
 
-      // Add a history entry so the phone's Back button closes the game
-      // instead of leaving the page (leaving is what shows a URL).
-      if (!history.state || !history.state.gameOpen) {
-        history.pushState({ gameOpen: true }, "", location.href);
+      // Track the open game with the URL hash (#play). A hash change stays
+      // inside the same document, so the page keeps its fullscreen when the
+      // user presses Back. history.pushState() would instead drop the
+      // browser out of fullscreen (and show the URL bar).
+      if (location.hash !== "#play") {
+        hashPushed = true;
+        location.hash = "#play";
       }
 
       fullscreenWasActive = false;
@@ -529,7 +555,7 @@
     // Some mobile browsers only allow fullscreen on a fresh tap.
     // If we are not in fullscreen yet, a tap inside the player retries it.
     gamePlayer.addEventListener("pointerdown", event => {
-      if (event.target.closest && event.target.closest(".player-close")) {
+      if (event.target.closest && event.target.closest(".player-back")) {
         return;
       }
 
@@ -559,18 +585,28 @@
 
       exitFullscreen();
 
-      // Remove the history entry we added when the game opened.
-      if (!fromHistory && history.state && history.state.gameOpen) {
+      // Remove the #play hash we added when the game opened.
+      if (!fromHistory && hashPushed) {
+        hashPushed = false;
         history.back();
+      } else {
+        hashPushed = false;
       }
     }
 
     // Phone Back button / swipe-back while a game is open.
-    window.addEventListener("popstate", () => {
-      if (gamePlayer.classList.contains("open")) {
+    function handleBackNavigation() {
+      if (
+        gamePlayer.classList.contains("open") &&
+        location.hash !== "#play"
+      ) {
+        hashPushed = false;
         closeGame(true);
       }
-    });
+    }
+
+    window.addEventListener("hashchange", handleBackNavigation);
+    window.addEventListener("popstate", handleBackNavigation);
 
     closeGameBtn.addEventListener("click", () => closeGame(false));
 
@@ -735,5 +771,5 @@
   </script>
 
 </body>
-    </html>
-        
+  </html>
+  
