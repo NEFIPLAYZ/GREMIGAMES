@@ -508,6 +508,12 @@
       document.body.classList.add("player-open");
       document.documentElement.classList.add("player-open");
 
+      // Add a history entry so the phone's Back button closes the game
+      // instead of leaving the page (leaving is what shows a URL).
+      if (!history.state || !history.state.gameOpen) {
+        history.pushState({ gameOpen: true }, "", location.href);
+      }
+
       // Ask for fullscreen FIRST, while the tap is still "fresh"
       // (some browsers reject the request if anything runs in between).
       enterFullscreen();
@@ -533,17 +539,11 @@
       }
     });
 
-    // Keep the page locked while the game is open.
-    function syncBodyLock() {
-      if (gamePlayer.classList.contains("open")) {
-        document.body.classList.add("player-open");
+    function closeGame(fromHistory) {
+      if (!gamePlayer.classList.contains("open")) {
+        return;
       }
-    }
 
-    document.addEventListener("fullscreenchange", syncBodyLock);
-    document.addEventListener("webkitfullscreenchange", syncBodyLock);
-
-    function closeGame() {
       gamePlayer.classList.remove("open");
       document.body.classList.remove("player-open");
       document.documentElement.classList.remove("player-open");
@@ -552,9 +552,21 @@
       currentGameLink = "";
 
       exitFullscreen();
+
+      // Remove the history entry we added when the game opened.
+      if (!fromHistory && history.state && history.state.gameOpen) {
+        history.back();
+      }
     }
 
-    closeGameBtn.addEventListener("click", closeGame);
+    // Phone Back button / swipe-back while a game is open.
+    window.addEventListener("popstate", () => {
+      if (gamePlayer.classList.contains("open")) {
+        closeGame(true);
+      }
+    });
+
+    closeGameBtn.addEventListener("click", () => closeGame(false));
 
     document.addEventListener("keydown", event => {
       if (
@@ -567,20 +579,37 @@
       }
     });
 
-    // If the user leaves fullscreen (swipe/back), close the game too
-    // so the address bar never sits on top of a running game.
-    function handleFullscreenExit() {
-      if (
-        gamePlayer.classList.contains("open") &&
-        !document.fullscreenElement &&
-        !document.webkitFullscreenElement
-      ) {
-        closeGame();
+    // If the user leaves fullscreen (swipe/back), close the game so the
+    // browser's URL bar never sits on top of a running game.
+    let fullscreenExitTimer = null;
+
+    function handleFullscreenChange() {
+      clearTimeout(fullscreenExitTimer);
+
+      const isFullscreen =
+        document.fullscreenElement || document.webkitFullscreenElement;
+
+      if (isFullscreen) {
+        if (gamePlayer.classList.contains("open")) {
+          document.body.classList.add("player-open");
+        }
+        return;
       }
+
+      // We just left fullscreen - wait a moment, then close if still out.
+      fullscreenExitTimer = setTimeout(() => {
+        if (
+          gamePlayer.classList.contains("open") &&
+          !document.fullscreenElement &&
+          !document.webkitFullscreenElement
+        ) {
+          closeGame(false);
+        }
+      }, 400);
     }
 
-    document.addEventListener("fullscreenchange", handleFullscreenExit);
-    document.addEventListener("webkitfullscreenchange", handleFullscreenExit);
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
 
     function renderGames() {
       const searchText = searchInput.value.trim().toLowerCase();
@@ -664,5 +693,5 @@
   </script>
 
 </body>
-        </html>
-      
+      </html>
+  
