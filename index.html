@@ -514,6 +514,9 @@
         history.pushState({ gameOpen: true }, "", location.href);
       }
 
+      fullscreenWasActive = false;
+      startFullscreenWatch();
+
       // Ask for fullscreen FIRST, while the tap is still "fresh"
       // (some browsers reject the request if anything runs in between).
       enterFullscreen();
@@ -551,6 +554,9 @@
       gameFrame.src = "about:blank";
       currentGameLink = "";
 
+      stopFullscreenWatch();
+      fullscreenWasActive = false;
+
       exitFullscreen();
 
       // Remove the history entry we added when the game opened.
@@ -579,17 +585,23 @@
       }
     });
 
-    // If the user leaves fullscreen (swipe/back), close the game so the
-    // browser's URL bar never sits on top of a running game.
+    // If the user leaves fullscreen (Back / swipe-back), close the game so
+    // the browser's URL bar never sits on top of a running game.
     let fullscreenExitTimer = null;
+    let fullscreenWasActive = false;
+    let fullscreenWatch = null;
+
+    function isFullscreenNow() {
+      return !!(
+        document.fullscreenElement || document.webkitFullscreenElement
+      );
+    }
 
     function handleFullscreenChange() {
       clearTimeout(fullscreenExitTimer);
 
-      const isFullscreen =
-        document.fullscreenElement || document.webkitFullscreenElement;
-
-      if (isFullscreen) {
+      if (isFullscreenNow()) {
+        fullscreenWasActive = true;
         if (gamePlayer.classList.contains("open")) {
           document.body.classList.add("player-open");
         }
@@ -597,19 +609,45 @@
       }
 
       // We just left fullscreen - wait a moment, then close if still out.
-      fullscreenExitTimer = setTimeout(() => {
-        if (
-          gamePlayer.classList.contains("open") &&
-          !document.fullscreenElement &&
-          !document.webkitFullscreenElement
-        ) {
-          closeGame(false);
+      fullscreenExitTimer = setTimeout(checkLeftFullscreen, 150);
+    }
+
+    function checkLeftFullscreen() {
+      if (
+        gamePlayer.classList.contains("open") &&
+        fullscreenWasActive &&
+        !isFullscreenNow()
+      ) {
+        closeGame(false);
+      }
+    }
+
+    function startFullscreenWatch() {
+      stopFullscreenWatch();
+
+      // Backup check for browsers that do not fire fullscreenchange when
+      // Back / swipe-back drops out of fullscreen.
+      fullscreenWatch = setInterval(() => {
+        if (!gamePlayer.classList.contains("open")) {
+          stopFullscreenWatch();
+          return;
         }
-      }, 400);
+        checkLeftFullscreen();
+      }, 250);
+    }
+
+    function stopFullscreenWatch() {
+      if (fullscreenWatch) {
+        clearInterval(fullscreenWatch);
+        fullscreenWatch = null;
+      }
     }
 
     document.addEventListener("fullscreenchange", handleFullscreenChange);
     document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
+
+    // The viewport changes size the moment the browser shows its toolbar.
+    window.addEventListener("resize", checkLeftFullscreen);
 
     function renderGames() {
       const searchText = searchInput.value.trim().toLowerCase();
@@ -693,5 +731,5 @@
   </script>
 
 </body>
-      </html>
+  </html>
   
